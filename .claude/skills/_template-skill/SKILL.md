@@ -1,6 +1,6 @@
 ---
-name: [SPEC] skill-name
-description: [SPEC] Clear description of when this skill should be activated. Include keywords that Claude uses to decide whether to auto-invoke. The description is CRITICAL for auto-activation — be specific.
+name: "[SPEC] skill-name"
+description: "[SPEC] Clear description of when this skill should be activated. Include keywords that Claude uses to decide whether to auto-invoke. The description is CRITICAL for auto-activation — be specific."
 allowed tools: Read, Grep, Glob
 ---
 
