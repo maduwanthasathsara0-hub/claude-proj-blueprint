@@ -2,8 +2,14 @@
   "permissions": {
     "allow": [
       "Read:*",
-      "Bash:git:*",
-      "Write:*:*.md"
+      "Write:*:*.md",
+      "Edit",
+      "MultiEdit",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(pnpm:*)",
+      "WebFetch",
+      "TodoWrite"
     ],
     "deny": [
       "Read:env:*",
