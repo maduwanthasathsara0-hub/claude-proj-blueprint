@@ -22,6 +22,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Bash(git commit*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/pre-commit-review.sh",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }

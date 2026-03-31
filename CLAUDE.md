@@ -43,6 +43,13 @@ See `docs/product/vision.md` for the full product vision.
 - Never commit secrets
 - Every UI component follows the design system
 
+### Code Review Gates (L3+)
+Every `git commit` triggers automated review via `scripts/pre-commit-review.sh`:
+- Compilation, tests, secrets, quality, error handling, test coverage
+- MUST FIX = commit blocked | SHOULD FIX = warning | CONSIDER = info
+- Add project-specific checks in the `[SPEC]` section of the script
+- See `docs/specs/code-review-gates.md` for details and ADR-004
+
 ## Design
 [SPEC] Choose your design flow (Figma is optional):
 

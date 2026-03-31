@@ -170,8 +170,18 @@ fi
 chmod +x scripts/*.sh 2>/dev/null || true
 echo "   ✅ Scripts made executable"
 
+# Pre-commit code review
+if [ -f "scripts/pre-commit-review.sh" ]; then
+  echo "   ✅ Pre-commit review hook ready"
+  echo "   📝 TODO: Configure stack settings at top of scripts/pre-commit-review.sh"
+  echo "   📝 TODO: Add project-specific checks in the [SPEC] section"
+else
+  echo "   ⚠️  scripts/pre-commit-review.sh not found"
+fi
+
 echo "   📝 TODO: Test hooks with a sample file write"
 echo "   📝 TODO: Customize lint-check.sh for your stack"
+echo "   📝 TODO: See docs/specs/code-review-gates.md for review gate philosophy"
 echo ""
 
 if [ "$LEVEL" -lt 4 ]; then
