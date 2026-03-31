@@ -88,6 +88,21 @@ The project adopts the following spec modules (see `docs/specs/`):
 - [ ] `ai-ml/` → Models, prompts, evals, guardrails
 - [ ] `long-term-memory/` → Vector DB, semantic search (L4)
 
+## Model Presets (L4)
+Agents use different models based on task complexity and cost:
+
+| Agent | Model | Why |
+|---|---|---|
+| Lead (you) | opus | Complex reasoning, coding, architecture |
+| `security-auditor` | opus | Deep vulnerability analysis, subtle patterns |
+| `compliance-auditor` | opus | Legal/regulatory interpretation |
+| `quality-guardian` | sonnet | Objective checklists, fast feedback |
+| [SPEC] `domain-auditor` | sonnet | Project-specific business rules |
+| [SPEC] `monitoring-agent` | haiku | Health checks, simple metrics |
+
+Configure via `model:` in agent frontmatter (`.claude/agents/*.md`).
+Switch session model: `/model opus` or `claude --model sonnet`.
+
 ## Gotchas
 [SPEC] List known edge cases and pitfalls:
 - [Gotcha 1]
