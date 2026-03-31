@@ -17,6 +17,30 @@ The script runs automated checks on staged source files and either:
 - **Warns** but allows (exit code 0) — for SHOULD FIX issues
 - **Passes clean** — all checks green
 
+## Review Levels
+
+Configured via `bootstrap.sh --review <level>` or `REVIEW_LEVEL` env var:
+
+| Level | What runs | Time | Cost | Best for |
+|---|---|---|---|---|
+| **simple** | Bash only (grep, compile, tests) | ~5-15s | Free | Solo devs, open source, CI-heavy teams |
+| **hybrid** | Bash + Sonnet AI review | ~20-30s | ~$0.01/commit | Most teams (recommended) |
+| **deep** | Bash + Opus AI review | ~40-60s | ~$0.05/commit | Security-critical, fintech, healthcare |
+
+### How AI review works (hybrid/deep)
+
+1. Bash checks run first (deterministic, fast)
+2. If no MUST FIX blockers, AI review runs on the staged diff
+3. AI analyzes logic bugs, edge cases, security risks, business logic
+4. AI adds **warnings only** — never blocks commits
+5. Bash handles blocking; AI handles intelligence
+
+### Requirements for hybrid/deep
+
+- `ANTHROPIC_API_KEY` set in environment, `.env`, or `~/.env`
+- `scripts/ai-review.sh` present in the project
+- Python 3 available (for JSON handling and API calls)
+
 ## Check Categories
 
 ### Universal checks (built-in)

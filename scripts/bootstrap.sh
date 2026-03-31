@@ -6,12 +6,14 @@ set -e
 
 LEVEL=2  # default
 DESIGN_FLOW=""
+REVIEW_LEVEL=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --level) LEVEL="$2"; shift 2 ;;
     --design) DESIGN_FLOW="$2"; shift 2 ;;
-    *) echo "Usage: ./scripts/bootstrap.sh --level [1|2|3|4] [--design figma|agent|hybrid]"; exit 1 ;;
+    --review) REVIEW_LEVEL="$2"; shift 2 ;;
+    *) echo "Usage: ./scripts/bootstrap.sh --level [1|2|3|4] [--design figma|agent|hybrid] [--review simple|hybrid|deep]"; exit 1 ;;
   esac
 done
 
@@ -170,9 +172,45 @@ fi
 chmod +x scripts/*.sh 2>/dev/null || true
 echo "   ✅ Scripts made executable"
 
-# Pre-commit code review
+# ─── Code Review Level ───────────────────────────────────────
+if [ -z "$REVIEW_LEVEL" ]; then
+  echo ""
+  echo "🔍 Code review level — how thorough should pre-commit review be?"
+  echo ""
+  echo "   1) Simple  — bash only (grep, compile, tests) — fast, free"
+  echo "   2) Hybrid  — bash + Sonnet AI review — balanced [recommended]"
+  echo "   3) Deep    — bash + Opus AI review — thorough, higher cost"
+  echo ""
+  echo "   All levels run the same bash checks (compilation, secrets, quality)."
+  echo "   Hybrid/Deep add an AI pass that catches logic bugs and edge cases."
+  echo "   AI review adds warnings only — never blocks commits."
+  echo ""
+  read -p "   Choose [1-3] (default: 1): " review_choice
+
+  case "$review_choice" in
+    2) REVIEW_LEVEL="hybrid" ;;
+    3) REVIEW_LEVEL="deep" ;;
+    *) REVIEW_LEVEL="simple" ;;
+  esac
+fi
+
+echo ""
+echo "   🔍 Review level: $REVIEW_LEVEL"
+
+# Configure review level in pre-commit-review.sh
 if [ -f "scripts/pre-commit-review.sh" ]; then
-  echo "   ✅ Pre-commit review hook ready"
+  sed -i.bak "s/^REVIEW_LEVEL=\"\${REVIEW_LEVEL:-simple}\"/REVIEW_LEVEL=\"\${REVIEW_LEVEL:-${REVIEW_LEVEL}}\"/" scripts/pre-commit-review.sh && rm -f scripts/pre-commit-review.sh.bak
+  echo "   ✅ Pre-commit review configured (level: $REVIEW_LEVEL)"
+
+  if [ "$REVIEW_LEVEL" = "hybrid" ] || [ "$REVIEW_LEVEL" = "deep" ]; then
+    if [ -f "scripts/ai-review.sh" ]; then
+      echo "   ✅ AI review script ready"
+    else
+      echo "   ⚠️  scripts/ai-review.sh not found — AI review won't work"
+    fi
+    echo "   📝 TODO: Set ANTHROPIC_API_KEY in .env or ~/.env for AI review"
+  fi
+
   echo "   📝 TODO: Configure stack settings at top of scripts/pre-commit-review.sh"
   echo "   📝 TODO: Add project-specific checks in the [SPEC] section"
 else
@@ -314,6 +352,7 @@ echo "📊 Summary"
 echo "================================================"
 echo "Level:    $LEVEL"
 echo "Design:   $DESIGN_FLOW"
+echo "Review:   ${REVIEW_LEVEL:-n/a}"
 echo "Skills:   $SKILL_COUNT"
 echo "Commands: $CMD_COUNT"
 echo "Agents:   $AGENT_COUNT"

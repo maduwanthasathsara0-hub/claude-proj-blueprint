@@ -5,10 +5,18 @@
 # Triggered by .claude/hooks.json PreToolUse on "git commit"
 # This is a TEMPLATE — customize the [SPEC] sections for your project.
 #
+# Review levels (set via REVIEW_LEVEL env var or bootstrap):
+#   simple = bash checks only (grep, compile, tests) — fast, free
+#   hybrid = bash + Sonnet AI review (warnings only) — balanced
+#   deep   = bash + Opus AI review (warnings only) — thorough
+#
 # Philosophy: agents and skills are for on-demand tasks.
 # Hooks are for guarantees that must never fail.
 
 set -euo pipefail
+
+# ─── Review Level ───────────────────────────────────────────
+REVIEW_LEVEL="${REVIEW_LEVEL:-simple}"   # [SPEC] Set by bootstrap: simple | hybrid | deep
 
 # ─── Configuration ──────────────────────────────────────────
 # [SPEC] Adjust for your stack
@@ -235,6 +243,36 @@ fi
 #   fi
 # done
 
+# ═══════════════════════════════════════════════════════════
+# AI REVIEW (hybrid/deep mode only)
+# ═══════════════════════════════════════════════════════════
+if [ "$REVIEW_LEVEL" = "hybrid" ] || [ "$REVIEW_LEVEL" = "deep" ]; then
+  echo ""
+  echo "── AI Review ($(echo $REVIEW_LEVEL | tr '[:lower:]' '[:upper:]')) ──"
+
+  if [ "$REVIEW_LEVEL" = "deep" ]; then
+    export AI_REVIEW_MODEL="claude-opus-4-20250514"
+    export AI_REVIEW_MAX_TOKENS=800
+  else
+    export AI_REVIEW_MODEL="claude-sonnet-4-20250514"
+    export AI_REVIEW_MAX_TOKENS=500
+  fi
+
+  if [ -f "scripts/ai-review.sh" ]; then
+    AI_OUTPUT=$(bash scripts/ai-review.sh 2>&1) || true
+    if [ -n "$AI_OUTPUT" ]; then
+      echo "$AI_OUTPUT"
+      # Count AI warnings (don't block, just count)
+      AI_WARNINGS=$(echo "$AI_OUTPUT" | grep -c '⚠️\|SHOULD FIX' || true)
+      if [ "$AI_WARNINGS" -gt 0 ]; then
+        SHOULD_FIX=$((SHOULD_FIX + AI_WARNINGS))
+      fi
+    fi
+  else
+    echo "⚠️  scripts/ai-review.sh not found — skipping AI review"
+  fi
+fi
+
 # ─── Summary ────────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -243,10 +281,10 @@ if [ $MUST_FIX -gt 0 ]; then
   echo "   Fix the issues above before committing."
   exit 2
 elif [ $SHOULD_FIX -gt 0 ]; then
-  echo "⚠️  PASSED with $SHOULD_FIX warning(s)"
+  echo "⚠️  PASSED with $SHOULD_FIX warning(s) [mode: $REVIEW_LEVEL]"
   echo "   Consider fixing before deploying."
   exit 0
 else
-  echo "✅ All checks passed!"
+  echo "✅ All checks passed! [mode: $REVIEW_LEVEL]"
   exit 0
 fi
