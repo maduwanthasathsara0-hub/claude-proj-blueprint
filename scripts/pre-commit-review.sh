@@ -251,10 +251,10 @@ if [ "$REVIEW_LEVEL" = "hybrid" ] || [ "$REVIEW_LEVEL" = "deep" ]; then
   echo "── AI Review ($(echo $REVIEW_LEVEL | tr '[:lower:]' '[:upper:]')) ──"
 
   if [ "$REVIEW_LEVEL" = "deep" ]; then
-    export AI_REVIEW_MODEL="claude-opus-4-20250514"
+    export AI_REVIEW_MODEL="opus"
     export AI_REVIEW_MAX_TOKENS=800
   else
-    export AI_REVIEW_MODEL="claude-sonnet-4-20250514"
+    export AI_REVIEW_MODEL="sonnet"
     export AI_REVIEW_MAX_TOKENS=500
   fi
 

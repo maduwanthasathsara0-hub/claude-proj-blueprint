@@ -37,9 +37,10 @@ Configured via `bootstrap.sh --review <level>` or `REVIEW_LEVEL` env var:
 
 ### Requirements for hybrid/deep
 
-- `ANTHROPIC_API_KEY` set in environment, `.env`, or `~/.env`
+- `claude` CLI installed (uses your Max/Pro plan — no API key needed), **OR**
+- `ANTHROPIC_API_KEY` set in environment, `.env`, or `~/.env` (API fallback)
 - `scripts/ai-review.sh` present in the project
-- Python 3 available (for JSON handling and API calls)
+- Python 3 available (only needed for API fallback)
 
 ## Check Categories
 

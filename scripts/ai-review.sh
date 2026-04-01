@@ -1,41 +1,20 @@
 #!/bin/bash
-# AI-powered code review via Claude API (Sonnet)
+# AI-powered code review via Claude Code CLI
 # Called by pre-commit-review.sh in hybrid/deep mode.
 #
-# Sends the staged diff to Claude API for intelligent analysis.
+# Uses `claude` CLI (runs on your Max/Pro plan — no API key needed).
+# Falls back to Anthropic API if CLI not available.
 # Returns warnings only — never blocks (bash checks handle blocking).
 #
-# Requires: ANTHROPIC_API_KEY in environment or .env file
-# Model: configurable via AI_REVIEW_MODEL (default: claude-sonnet-4-20250514)
+# Model: configurable via AI_REVIEW_MODEL env var
+#   hybrid → sonnet (default)
+#   deep   → opus
 
 set -euo pipefail
 
 # ─── Config ─────────────────────────────────────────────────
-AI_REVIEW_MODEL="${AI_REVIEW_MODEL:-claude-sonnet-4-20250514}"
-AI_REVIEW_MAX_TOKENS="${AI_REVIEW_MAX_TOKENS:-500}"
+AI_REVIEW_MODEL="${AI_REVIEW_MODEL:-sonnet}"
 AI_REVIEW_MAX_DIFF_LINES="${AI_REVIEW_MAX_DIFF_LINES:-300}"
-
-# ─── Resolve API key ────────────────────────────────────────
-# Search order: env var → project .env → home .env → home .anthropic
-API_KEY="${ANTHROPIC_API_KEY:-}"
-
-if [ -z "$API_KEY" ]; then
-  for env_file in ".env" "$HOME/.env" "$HOME/.anthropic/.env" "$HOME/.config/anthropic/.env"; do
-    if [ -f "$env_file" ]; then
-      CANDIDATE=$(grep '^ANTHROPIC_API_KEY=' "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'" || true)
-      if [ -n "$CANDIDATE" ]; then
-        API_KEY="$CANDIDATE"
-        break
-      fi
-    fi
-  done
-fi
-
-if [ -z "$API_KEY" ]; then
-  echo "⚠️  AI Review: ANTHROPIC_API_KEY not found"
-  echo "   Set it in: .env, ~/.env, or export ANTHROPIC_API_KEY=sk-..."
-  exit 0
-fi
 
 # ─── Get staged diff ────────────────────────────────────────
 DIFF=$(git diff --cached --diff-filter=ACMR -- '*.ts' '*.py' '*.go' '*.rs' '*.js' '*.tsx' '*.jsx' | head -n "$AI_REVIEW_MAX_DIFF_LINES")
@@ -51,28 +30,8 @@ if [ -f ".claude/skills/code-review/SKILL.md" ]; then
   PROJECT_CONTEXT=$(head -40 .claude/skills/code-review/SKILL.md)
 fi
 
-# ─── Export vars for Python ─────────────────────────────────
-export API_KEY
-export AI_REVIEW_MODEL
-export AI_REVIEW_MAX_TOKENS
-export REVIEW_DIFF="$DIFF"
-export PROJECT_CONTEXT
-
-# ─── Call Claude API via Python (handles JSON escaping safely) ──
-AI_OUTPUT=$(python3 << 'PYEOF'
-import json, sys, os, urllib.request, urllib.error
-
-api_key = os.environ.get("API_KEY", "")
-model = os.environ.get("AI_REVIEW_MODEL", "claude-sonnet-4-20250514")
-max_tokens = int(os.environ.get("AI_REVIEW_MAX_TOKENS", "500"))
-diff = os.environ.get("REVIEW_DIFF", "")
-project_context = os.environ.get("PROJECT_CONTEXT", "")
-
-if not api_key or not diff:
-    print("⚠️  AI Review: missing API key or diff — skipping")
-    sys.exit(0)
-
-system_prompt = f"""You are a code reviewer. Analyze the git diff and report issues.
+# ─── Build prompt ──────────────────────────────────────────
+SYSTEM_PROMPT="You are a code reviewer. Analyze the git diff and report issues.
 
 Rules:
 - Only report real, actionable issues — no generic advice
@@ -83,9 +42,78 @@ Rules:
 - Be concise: max 3-5 findings, one line each
 - If the diff looks clean, just say 'No issues found'
 
-{project_context}Output format (one per line):
+${PROJECT_CONTEXT}
+Output format (one per line):
 ⚠️ SHOULD FIX [file]: description
-ℹ️ CONSIDER [file]: description"""
+ℹ️ CONSIDER [file]: description"
+
+USER_PROMPT="Review this staged diff:
+
+${DIFF}"
+
+# ─── Method 1: Claude Code CLI (uses Max/Pro plan) ─────────
+if command -v claude &> /dev/null; then
+  AI_OUTPUT=$(echo "$USER_PROMPT" | claude --print \
+    --model "$AI_REVIEW_MODEL" \
+    --append-system-prompt "$SYSTEM_PROMPT" \
+    --bare \
+    --allowedTools "" \
+    2>/dev/null) || true
+
+  if [ -n "$AI_OUTPUT" ]; then
+    echo "$AI_OUTPUT"
+    exit 0
+  fi
+fi
+
+# ─── Method 2: Anthropic API (fallback, requires API key) ──
+# [SPEC] Remove this section if you only use Claude Code CLI
+
+API_KEY="${ANTHROPIC_API_KEY:-}"
+
+if [ -z "$API_KEY" ]; then
+  for env_file in ".env" "$HOME/.env" "$HOME/.config/anthropic/.env"; do
+    if [ -f "$env_file" ]; then
+      CANDIDATE=$(grep '^ANTHROPIC_API_KEY=' "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2- | tr -d '"' | tr -d "'" || true)
+      if [ -n "$CANDIDATE" ]; then
+        API_KEY="$CANDIDATE"
+        break
+      fi
+    fi
+  done
+fi
+
+if [ -z "$API_KEY" ]; then
+  echo "⚠️  AI Review: neither claude CLI nor ANTHROPIC_API_KEY available"
+  echo "   Install Claude Code CLI or set ANTHROPIC_API_KEY"
+  exit 0
+fi
+
+# Map model aliases to full names for API
+case "$AI_REVIEW_MODEL" in
+  sonnet) API_MODEL="claude-sonnet-4-20250514" ;;
+  opus)   API_MODEL="claude-opus-4-20250514" ;;
+  haiku)  API_MODEL="claude-haiku-4-5-20251001" ;;
+  *)      API_MODEL="$AI_REVIEW_MODEL" ;;
+esac
+
+AI_REVIEW_MAX_TOKENS="${AI_REVIEW_MAX_TOKENS:-500}"
+
+export API_KEY API_MODEL AI_REVIEW_MAX_TOKENS
+export REVIEW_DIFF="$DIFF"
+export REVIEW_SYSTEM_PROMPT="$SYSTEM_PROMPT"
+
+AI_OUTPUT=$(python3 << 'PYEOF'
+import json, sys, os, urllib.request, urllib.error
+
+api_key = os.environ.get("API_KEY", "")
+model = os.environ.get("API_MODEL", "claude-sonnet-4-20250514")
+max_tokens = int(os.environ.get("AI_REVIEW_MAX_TOKENS", "500"))
+diff = os.environ.get("REVIEW_DIFF", "")
+system_prompt = os.environ.get("REVIEW_SYSTEM_PROMPT", "")
+
+if not api_key or not diff:
+    sys.exit(0)
 
 payload = json.dumps({
     "model": model,
@@ -109,27 +137,13 @@ try:
         data = json.loads(resp.read().decode("utf-8"))
         if "content" in data and len(data["content"]) > 0:
             print(data["content"][0]["text"])
-        else:
-            print("⚠️  AI Review: empty response")
-except urllib.error.HTTPError as e:
-    body = e.read().decode("utf-8", errors="replace")
-    try:
-        err = json.loads(body)
-        print(f"⚠️  AI Review: API error — {err.get('error', {}).get('message', body[:100])}")
-    except Exception:
-        print(f"⚠️  AI Review: HTTP {e.code}")
 except Exception as e:
-    print(f"⚠️  AI Review: {e}")
+    print(f"⚠️  AI Review API fallback: {e}")
 PYEOF
 ) || true
 
-if [ -z "$AI_OUTPUT" ]; then
-  echo "⚠️  AI Review: no output — skipping"
-  exit 0
+if [ -n "$AI_OUTPUT" ]; then
+  echo "$AI_OUTPUT"
 fi
 
-# ─── Output ─────────────────────────────────────────────────
-echo "$AI_OUTPUT"
-
-# AI review never blocks — exit 0 always
 exit 0
