@@ -7,6 +7,25 @@ This project uses date-based releases (YYYY-MM-DD), not semver.
 
 ---
 
+## [2026-04-01] — Full lifecycle coverage
+
+### Added
+- **Debugger skill (`/debug`)** — systematic debugging workflow: reproduce → isolate → hypothesize → fix → verify → document. The biggest gap in the previous version. (L2 skill + command)
+- **PRD writer skill** — turn rough ideas into structured PRDs using the project template. Asks up to 5 clarifying questions, checks memory for overlap, outputs to `docs/product/`. (L2 skill)
+- **Refactoring skill (`/refactor`)** — safe structural refactoring with a catalog of patterns (extract, move, rename, simplify, restructure). Tests before AND after each step. ADR for architecture changes. (L2 skill + command)
+- **API designer skill** — contract-first API design: endpoints, schemas, error codes, pagination, auth. Checks versioning and security specs. (L2 skill)
+- **Migration skill** — database migration workflow with risk assessment (green/yellow/red), up+down generation, zero-downtime patterns, reversibility verification. ADR required for destructive changes. (L3 skill)
+- **Tech debt tracker (`/debt`)** — automated scan (TODOs, type suppressions, high-churn files, outdated deps, skipped tests) + manual assessment + prioritized report. (L3 skill + command)
+- **Performance auditor agent** — dedicated agent for N+1 queries, unbounded loops, missing indexes, caching, pagination, payload sizes. Sonnet model. Pairs with scalability spec. (L4 agent)
+- **API spec module** (`docs/specs/api/`) — conventions for REST/GraphQL, pagination, error format, rate limiting, naming, CORS. Pairs with api-designer skill.
+- 7 new magic keywords in `magic-keywords.sh`: debug, refactor, tech debt, PRD writer, API design, migration, audit mode updated
+- Performance-auditor deliverables schema for output validation
+
+### Changed
+- **Testing skill rewritten** — was a 20-line stub, now a full workflow: analyze code → decide test type → generate with AAA pattern → mock strategy → run and verify. Covers edge cases, async, concurrency, security testing. (L2 skill)
+- `/spec-review` now invokes 4 agents: security-auditor + compliance-auditor + quality-guardian + performance-auditor
+- CLAUDE.md: 14 spec modules (added `api/`), 5 model presets (added performance-auditor), expanded slash commands and magic keywords
+
 ## [2026-04-01]
 
 ### Added

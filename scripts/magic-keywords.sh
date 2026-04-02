@@ -43,9 +43,45 @@ if echo "$PROMPT_LOWER" | grep -qE "(build me|implement|create feature|construa|
   fi
 fi
 
+# Debugger
+if echo "$PROMPT_LOWER" | grep -qE "(debug|why is.*(fail|break|crash)|root cause|broken|investigate|trace error|not working|nao funciona|quebrou)"; then
+  echo '{"result":"add_context","context":"[DEBUGGER ACTIVATED] Use the debugger skill. Systematic workflow: reproduce → isolate → hypothesize (2+ causes) → fix → verify → document. Never guess — gather evidence first."}'
+  exit 0
+fi
+
+# Refactoring
+if echo "$PROMPT_LOWER" | grep -qE "(refactor|extract (function|method|class|module)|split module|restructure|decouple|simplify architecture)"; then
+  echo '{"result":"add_context","context":"[REFACTOR MODE] Use the refactor skill. Tests must pass before AND after. One refactoring at a time, commit between each. ADR if architecture changes."}'
+  exit 0
+fi
+
+# Tech debt
+if echo "$PROMPT_LOWER" | grep -qE "(tech.?debt|technical debt|cleanup backlog|what needs fix|code health|debt audit|divida tecnica)"; then
+  echo '{"result":"add_context","context":"[TECH DEBT SCAN] Use the tech-debt skill. Scan for TODOs, type suppressions, high-churn files, outdated deps, test gaps. Produce prioritized report in docs/architecture/."}'
+  exit 0
+fi
+
+# PRD writing
+if echo "$PROMPT_LOWER" | grep -qE "(write prd|draft prd|break down feature|scope this|requirements for|define feature|escrever prd|definir feature)"; then
+  echo '{"result":"add_context","context":"[PRD WRITER] Use the prd-writer skill. Read the template at docs/product/_template-prd.md. Clarify ambiguities (max 5 questions), then draft a structured PRD with user stories, acceptance criteria, and spec impact."}'
+  exit 0
+fi
+
+# API design
+if echo "$PROMPT_LOWER" | grep -qE "(design api|new endpoint|api contract|rest api|graphql|openapi|swagger|api spec|definir api)"; then
+  echo '{"result":"add_context","context":"[API DESIGNER] Use the api-designer skill. Contract first: define endpoints, schemas, error codes, pagination. Check versioning and security specs. Output API spec before implementation."}'
+  exit 0
+fi
+
+# Migration
+if echo "$PROMPT_LOWER" | grep -qE "(migration|schema change|add column|alter table|database change|create table|migrate|migracao)"; then
+  echo '{"result":"add_context","context":"[MIGRATION MODE] Use the migration skill. Assess risk (green/yellow/red), generate up+down migration, test reversibility. ADR required for destructive changes (DROP, type change)."}'
+  exit 0
+fi
+
 # Review / audit
 if echo "$PROMPT_LOWER" | grep -qE "(security audit|compliance audit|spec review|full review|auditoria|revisao completa)"; then
-  echo '{"result":"add_context","context":"[AUDIT MODE] Use /spec-review workflow. Invoke security-auditor, compliance-auditor, and quality-guardian agents. Consolidate findings by severity."}'
+  echo '{"result":"add_context","context":"[AUDIT MODE] Use /spec-review workflow. Invoke security-auditor, compliance-auditor, quality-guardian, and performance-auditor agents. Consolidate findings by severity."}'
   exit 0
 fi
 

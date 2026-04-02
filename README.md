@@ -59,29 +59,40 @@ your-project/
 ├── CLAUDE.md                    ← L1+  Hub — Claude reads this first
 ├── .claude/
 │   ├── settings.json            ← L1+  Permissions & safety
-│   ├── skills/                  ← L2+  Auto-invoked knowledge packs
-│   │   ├── code-review/
-│   │   ├── testing/
-│   │   ├── implement-prd/
+│   ├── skills/                  ← L2+  Auto-invoked knowledge packs (16 skills)
+│   │   ├── implement-prd/       ←      Implement from PRD
+│   │   ├── prd-writer/          ←      Draft/refine PRDs from rough ideas
+│   │   ├── debugger/            ←      Systematic debugging workflow
+│   │   ├── testing/             ←      Test generation and coverage
+│   │   ├── refactor/            ←      Safe structural refactoring
+│   │   ├── code-review/         ←      Review checklist
+│   │   ├── api-designer/        ←      API contract design
+│   │   ├── migration/           ← L3   Database migration workflow
+│   │   ├── tech-debt/           ← L3   Debt identification and tracking
 │   │   ├── frontend-agent/      ←      UI generation without Figma
 │   │   ├── persistence/         ←      Ralph mode — iterate until done
 │   │   ├── slop-cleaner/        ←      Remove AI-generated code noise
 │   │   ├── learner/             ← L4   Extract patterns to improve skills
-│   │   ├── adr/
-│   │   ├── memory/              ←      L4 long-term memory retrieval
+│   │   ├── adr/                 ←      Architecture Decision Records
+│   │   ├── memory/              ← L4   Long-term memory retrieval
 │   │   └── _template-skill/     ←      Create your own
-│   ├── commands/                ← L2+  Slash commands
+│   ├── commands/                ← L2+  Slash commands (10 commands)
 │   │   ├── implement.md         ←      /implement <prd-path>
 │   │   ├── ralph.md             ←      /ralph <prd-path> (don't stop)
+│   │   ├── debug.md             ←      /debug <error|file>
+│   │   ├── refactor.md          ←      /refactor <file|module>
 │   │   ├── clean.md             ←      /clean [file|dir]
+│   │   ├── debt.md              ←      /debt [dir]
 │   │   ├── learn.md             ←      /learn [--commits N]
 │   │   ├── deploy.md            ←      /deploy
-│   │   └── spec-review.md       ←      /spec-review <path>
+│   │   ├── spec-review.md       ←      /spec-review <path>
+│   │   └── memory.md            ←      /memory <search|index|stats>
 │   ├── hooks.json               ← L3+  Automated gates (7 hooks)
-│   └── agents/                  ← L4+  Specialized sub-agents
-│       ├── compliance-auditor.md
-│       ├── security-auditor.md
-│       └── quality-guardian.md
+│   └── agents/                  ← L4+  Specialized sub-agents (4 agents)
+│       ├── security-auditor.md  ←      OWASP, injection, auth (opus)
+│       ├── compliance-auditor.md ←     LGPD, GDPR, HIPAA, PCI-DSS (opus)
+│       ├── quality-guardian.md  ←      Tests, docs, Definition of Done (sonnet)
+│       └── performance-auditor.md ←    N+1, caching, pagination (sonnet)
 ├── docs/                        ← L1+  Obsidian vault
 │   ├── product/                 ←      PRDs, vision, roadmap
 │   ├── architecture/            ←      ADRs (decision records)
@@ -125,6 +136,7 @@ Specs are **plug-and-play** knowledge modules in `docs/specs/`. Enable only what
 | `i18n/` | Multi-language, localization | International products |
 | `testing-strategy/` | Test pyramid, QA process | Teams with 3+ devs |
 | `devops/` | CI/CD, IaC, environments | Every production project |
+| `api/` | API conventions, endpoints, error format | Projects with APIs |
 | `data-architecture/` | Modeling, pipelines, analytics | Data-intensive products |
 | `ai-ml/` | Models, prompts, evals, guardrails | AI/ML products |
 | `long-term-memory/` | Vector DB, semantic search | L4 autonomous systems |
@@ -160,11 +172,11 @@ Becomes:
 
 **L1 — CLAUDE.md** — Claude reads this automatically at every session. Your stack, architecture, conventions, gotchas. Keep it under 200 lines.
 
-**L2 — Skills** — Markdown files that Claude loads based on natural language triggers. Say "write tests" and the testing skill activates automatically.
+**L2 — Skills** — Markdown files that Claude loads based on natural language triggers. Say "write tests" and the testing skill activates. Say "debug this" and the debugger skill kicks in. 16 skills covering the full development lifecycle.
 
 **L3 — Hooks** — Scripts that run before/after Claude uses tools. Lint on every file write. Security check before every bash command. Exit 0 = allow, exit 2 = block.
 
-**L4 — Agents** — Sub-agents with their own context. Run individually or as a coordinated team with the author-critic loop.
+**L4 — Agents** — Sub-agents with their own context (security, compliance, quality, performance). Run individually or as a coordinated team with the author-critic loop.
 
 **L4 — Memory** — Vector database indexes `docs/` and `src/` for semantic search. Ask "how did we handle rate limiting?" and get the relevant ADR, code, and PRD. Supports Chroma (local, default) or pgvector (shared, team-wide).
 
@@ -187,17 +199,17 @@ cd your-project && claude
 # /compact to compress context
 # Commit frequently, new session per feature
 
-# L2+ — Persistence mode
+# L2+ — Full lifecycle
 # /ralph docs/product/feat-auth.md     → iterate until all criteria pass
-# Or just say: "don't stop until all tests pass"
-
-# L2+ — Code quality
+# /debug "TypeError in auth module"     → systematic debugging
+# /refactor src/auth/                   → safe structural refactoring
 # /clean src/                           → remove AI slop from code
-# Or just say: "clean up the code"
+# /debt                                 → scan and prioritize tech debt
+# Or just say: "don't stop", "debug this", "refactor", "clean up"
 
 # L3+
-# /spec-review src/ → run compliance + security + quality audit
-# Magic keywords work automatically: "security audit", "build me feature"
+# /spec-review src/ → run 4-agent audit (security + compliance + quality + performance)
+# Magic keywords work: "security audit", "tech debt", "migration", "design API"
 
 # L4+
 # /memory search "how did we handle rate limiting"

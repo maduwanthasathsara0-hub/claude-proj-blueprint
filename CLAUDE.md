@@ -39,17 +39,26 @@ See `docs/product/vision.md` for the full product vision.
 
 ### Slash commands
 - `/implement <PRD>` → implement feature from PRD (Plan Mode → code → test → docs)
-- `/ralph <PRD>` → persistence mode: implement and don't stop until all acceptance criteria pass
+- `/ralph <PRD>` → persistence mode: don't stop until all acceptance criteria pass
+- `/debug <error|file>` → systematic debugging: reproduce → isolate → fix → verify
+- `/refactor <file|module>` → safe refactoring with tests before and after each step
 - `/clean [file|dir]` → remove AI-generated slop from code
+- `/debt [dir]` → scan for technical debt, produce prioritized report
 - `/learn [--commits N]` → analyze recent work, extract patterns, improve skills
 - `/deploy` → run deploy checklist
 - `/memory <search|index|stats>` → long-term memory operations
-- `/spec-review <path>` → run agent audit (security + compliance + quality)
+- `/spec-review <path>` → run agent audit (security + compliance + quality + performance)
 
 ### Magic keywords (L3+)
 These phrases are auto-detected and activate the corresponding workflow:
 - "don't stop" / "keep going" / "ralph" → persistence mode
 - "clean up" / "remove slop" / "polish" → slop cleaner
+- "debug" / "why is this failing" / "broken" → debugger skill
+- "refactor" / "extract" / "restructure" → refactoring skill
+- "tech debt" / "code health" → tech debt tracker
+- "write PRD" / "scope this" → PRD writer
+- "design API" / "new endpoint" → API designer
+- "migration" / "schema change" → migration skill
 - "build me feature" / "implement feature" → /implement flow
 - "security audit" / "compliance audit" → /spec-review flow
 - "learn from this" / "retrospective" → learner skill
@@ -125,6 +134,7 @@ The project adopts the following spec modules (see `docs/specs/`):
 - [ ] `testing-strategy/` → Test pyramid, QA
 - [ ] `devops/` → CI/CD, IaC, environments
 - [ ] `data-architecture/` → Modeling, pipelines, analytics
+- [ ] `api/` → API conventions, endpoints, error format, pagination
 - [ ] `ai-ml/` → Models, prompts, evals, guardrails
 - [ ] `long-term-memory/` → Vector DB, semantic search (L4)
 
@@ -137,6 +147,7 @@ Agents use different models based on task complexity and cost:
 | `security-auditor` | opus | Deep vulnerability analysis, subtle patterns |
 | `compliance-auditor` | opus | Legal/regulatory interpretation |
 | `quality-guardian` | sonnet | Objective checklists, fast feedback |
+| `performance-auditor` | sonnet | N+1 queries, unbounded loops, caching, pagination |
 | [SPEC] `domain-auditor` | sonnet | Project-specific business rules |
 | [SPEC] `monitoring-agent` | haiku | Health checks, simple metrics |
 

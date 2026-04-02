@@ -140,9 +140,8 @@ echo "   📦 $SKILL_COUNT skills found"
 CMD_COUNT=$(find .claude/commands -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 echo "   ⚡ $CMD_COUNT commands found"
 
-echo "   ✅ Persistence mode (/ralph) — iterative implementation until all criteria pass"
-echo "   ✅ Slop cleaner (/clean) — remove AI-generated code patterns"
-echo "   ✅ Learner (/learn) — extract patterns from recent work to improve skills"
+echo "   ✅ /implement, /ralph, /debug, /refactor, /clean, /debt, /learn, /deploy, /spec-review, /memory"
+echo "   ✅ 16 auto-invoked skills covering full development lifecycle"
 echo "   📝 TODO: Create project-specific skills in .claude/skills/"
 echo "   📝 TODO: Use .claude/skills/_template-skill/SKILL.md as template"
 echo ""
