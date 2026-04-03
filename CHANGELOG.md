@@ -20,6 +20,7 @@ This project uses date-based releases (YYYY-MM-DD), not semver.
 - `verify-deliverables.sh` — now emits agent:start and agent:complete events to the event log.
 - `context-guard.sh` — now emits agent:finding events when thresholds are hit.
 - README.md — updated project structure (logs/, tools/, 2 new scripts), added Agent Monitor section to L4 docs.
+- `docs-check.sh` — expanded to monitor `src/` + `scripts/` + `tools/` + `.claude/` (was only `src/`). Added CHANGELOG check for feature commits, ADR check for hooks.json changes. Upgraded severity from CONSIDER to SHOULD FIX.
 
 ---
 
