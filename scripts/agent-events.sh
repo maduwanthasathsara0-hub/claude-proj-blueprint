@@ -77,11 +77,16 @@ emit_event() {
 
 # ─── Typed emitters ─────────────────────────────────────────
 
-# emit_agent_start <agent_name> <task_description>
+# emit_agent_start <agent_name> <task_description> [agent_id]
 emit_agent_start() {
   local agent_name="$1"
   local task="$2"
-  emit_event "agent:start" "$agent_name" "task=$task"
+  local agent_id="${3:-}"
+  if [ -n "$agent_id" ]; then
+    emit_event "agent:start" "$agent_name" "task=$task" "agent_id=$agent_id"
+  else
+    emit_event "agent:start" "$agent_name" "task=$task"
+  fi
 }
 
 # emit_agent_progress <agent_name> <tool_name> <detail>
@@ -92,12 +97,17 @@ emit_agent_progress() {
   emit_event "agent:progress" "$agent_name" "tool=$tool_name" "detail=$detail"
 }
 
-# emit_agent_complete <agent_name> <status: ok|error|warning> <summary>
+# emit_agent_complete <agent_name> <status: ok|error|warning> <summary> [agent_id]
 emit_agent_complete() {
   local agent_name="$1"
   local agent_status="$2"
   local summary="$3"
-  emit_event "agent:complete" "$agent_name" "status=$agent_status" "summary=$summary"
+  local agent_id="${4:-}"
+  if [ -n "$agent_id" ]; then
+    emit_event "agent:complete" "$agent_name" "status=$agent_status" "summary=$summary" "agent_id=$agent_id"
+  else
+    emit_event "agent:complete" "$agent_name" "status=$agent_status" "summary=$summary"
+  fi
 }
 
 # emit_agent_finding <agent_name> <severity> <category> <message>
