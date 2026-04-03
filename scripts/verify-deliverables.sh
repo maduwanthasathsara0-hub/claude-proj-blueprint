@@ -7,6 +7,10 @@
 
 SCHEMA_DIR="docs/specs/deliverables"
 
+# Source event emitter
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/agent-events.sh"
+
 # Read the agent event from stdin
 INPUT=$(cat)
 
@@ -23,6 +27,8 @@ fi
 if [ -z "$AGENT_NAME" ]; then
   exit 0
 fi
+
+emit_agent_start "deliverables-verifier" "verify output for ${AGENT_NAME}"
 
 # Look for schema file
 SCHEMA_FILE="${SCHEMA_DIR}/${AGENT_NAME}.schema"
@@ -61,6 +67,7 @@ fi
 
 if [ -n "$MISSING" ]; then
   MISSING_COUNT=$((TOTAL - FOUND))
+  emit_agent_complete "deliverables-verifier" "warning" "${AGENT_NAME} missing ${MISSING_COUNT}/${TOTAL} fields: ${MISSING}"
   cat << EOF
 ⚠️  DELIVERABLES CHECK: ${AGENT_NAME} output is missing ${MISSING_COUNT}/${TOTAL} required fields.
    Missing: ${MISSING}
@@ -68,6 +75,8 @@ if [ -n "$MISSING" ]; then
    Expected fields are defined in: ${SCHEMA_FILE}
    The agent should re-run or complete its output with the missing sections.
 EOF
+else
+  emit_agent_complete "deliverables-verifier" "ok" "${AGENT_NAME} passed all ${TOTAL} fields"
 fi
 
 # Never block — only warn

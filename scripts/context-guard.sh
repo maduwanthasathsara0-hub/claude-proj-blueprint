@@ -5,6 +5,10 @@
 # Hook: PostToolUse (runs on every tool use)
 # Level: L3+
 
+# Source event emitter
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/agent-events.sh"
+
 # ─── Configuration ───────────────────────────────────────────
 WARN_THRESHOLD=${CONTEXT_GUARD_WARN:-50}       # Tool calls before first warning
 CRITICAL_THRESHOLD=${CONTEXT_GUARD_CRITICAL:-80} # Tool calls before critical warning
@@ -31,6 +35,7 @@ echo "$COUNT" > "$COUNTER_FILE"
 
 # ─── Check thresholds ───────────────────────────────────────
 if [ "$COUNT" -ge "$CRITICAL_THRESHOLD" ]; then
+  emit_agent_finding "context-guard" "critical" "context-length" "Tool call count ${COUNT} exceeds critical threshold ${CRITICAL_THRESHOLD}"
   cat << 'EOF'
 🔴 CONTEXT CRITICAL — conversation is very long.
    Strongly recommend:
@@ -44,6 +49,7 @@ elif [ "$COUNT" -ge "$WARN_THRESHOLD" ]; then
   # Only warn once every 10 calls after threshold
   REMAINDER=$((COUNT % 10))
   if [ "$REMAINDER" -eq 0 ]; then
+    emit_agent_finding "context-guard" "warning" "context-length" "Tool call count ${COUNT} exceeds warning threshold ${WARN_THRESHOLD}"
     cat << 'EOF'
 ⚠️  CONTEXT WARNING — conversation is getting long.
    Consider running /compact soon to preserve context window.
