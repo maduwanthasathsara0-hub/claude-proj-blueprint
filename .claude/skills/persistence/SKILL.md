@@ -76,6 +76,22 @@ For each iteration (1 to max_iterations):
 - Do NOT count a criterion as passing based on "it should work" — verify with evidence
 - Do NOT make multiple unrelated changes per iteration — focus on one failing criterion
 
+## Racionalizações comuns
+
+| Racionalização | Realidade |
+|---|---|
+| "Já deve estar passando, não preciso rodar de novo" | "Deve" não é evidência. Execute o comando e confirme. |
+| "Esse critério é trivial, posso pular" | Critério trivial que falha em produção vira incidente. Verifique todos. |
+| "Vou arrumar dois critérios de uma vez pra ir mais rápido" | Mudanças simultâneas dificultam isolar qual quebrou. Uma por iteração. |
+| "Já tentei 3 vezes, não tem solução" | Tentou 3 vezes a MESMA abordagem. Mude a estratégia. |
+
+## Red Flags
+
+- Declarou critério como "passando" sem rodar o comando de verificação
+- Pediu confirmação do usuário entre iterações (deve ser autônomo)
+- Quebrou critério que já passava ao tentar corrigir outro
+- Repetiu a mesma abordagem 3+ vezes sem mudar estratégia
+
 ## References
 - Inspired by oh-my-claudecode's Ralph mode
 - See `/implement` for the standard implementation workflow

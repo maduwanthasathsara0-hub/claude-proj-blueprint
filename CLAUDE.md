@@ -28,6 +28,7 @@ See `docs/product/vision.md` for the full product vision.
 - Style: [linter, formatter, rules]
 - Types: [typing policy]
 - Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`)
+- Commit body: inclua `Não alterou:` listando arquivos/módulos intencionalmente não modificados
 - Branches: `feature/`, `fix/`, `docs/`, `refactor/`
 - PRs: always with description, reference PRD/ADR when applicable
 

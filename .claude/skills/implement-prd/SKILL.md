@@ -31,3 +31,21 @@ Check the PRD for these patterns to determine the flow:
 - Always check if an ADR already exists for the technical decision
 - Atomic commits per feature/sub-feature
 - Never hardcode UI values — always use design tokens or Figma specs
+
+## Racionalizações comuns
+
+| Racionalização | Realidade |
+|---|---|
+| "O código tá simples, não precisa de testes" | Código simples hoje vira complexo amanhã. Testes documentam intenção. |
+| "Já sei o que o PRD quer, não preciso ler tudo" | PRDs têm restrições e edge cases nas entrelinhas. Leia completo. |
+| "Esse ADR não se aplica aqui" | Se o ADR existe, alguém já enfrentou esse problema. Verifique antes de ignorar. |
+| "Vou commitar tudo junto, é mais rápido" | Commits atômicos permitem revert cirúrgico. Commit grande = revert impossível. |
+| "Design tokens são exagero pra esse componente" | Hardcode hoje, inconsistência amanhã. Sempre use tokens. |
+
+## Red Flags
+
+- Commitou sem rodar os testes
+- Alterou `src/` sem atualizar `docs/`
+- Pulou Plan Mode e foi direto pro código
+- Hardcodou valor de UI em vez de usar design token
+- Não checou ADRs antes de tomar decisão arquitetural

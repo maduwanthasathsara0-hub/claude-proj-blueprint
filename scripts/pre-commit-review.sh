@@ -217,6 +217,12 @@ else
   echo -e "$UNTESTED"
 fi
 
+# ─── 7. Scope discipline: "Não alterou" ──────────────────────
+echo ""
+echo "── Scope ──"
+echo "ℹ️  CONSIDER: Inclua 'Não alterou:' no commit message listando arquivos/módulos NÃO alterados intencionalmente"
+echo "   Isso ajuda revisores a entender o escopo pretendido da mudança."
+
 # ═══════════════════════════════════════════════════════════
 # PROJECT-SPECIFIC CHECKS
 # [SPEC] Add checks specific to your project below.

@@ -28,6 +28,22 @@ allowed tools: Read, Grep, Glob
 - 🟡 Suggestion — recommended improvement
 - 🟢 Nit — cosmetic, non-blocking
 
+## Racionalizações comuns
+
+| Racionalização | Realidade |
+|---|---|
+| "É só um refactor pequeno, não precisa de review" | Refactors pequenos introduzem bugs sutis. Review sempre. |
+| "Os testes passam, então o código está correto" | Testes cobrem cenários escritos. Review encontra cenários não testados. |
+| "Esse padrão é idiomático, não precisa comentar" | Idiomático pra quem? Docstring em função pública é obrigatório. |
+| "Performance não importa agora, é MVP" | N+1 query em MVP vira incidente em produção. Revise sempre. |
+
+## Red Flags
+
+- Aprovou sem verificar se testes existem para os cenários alterados
+- Ignorou warning de `any` type ou `@ts-ignore`
+- Não verificou se secrets estão hardcoded
+- Pulou checklist de spec ativo (segurança, compliance, etc.)
+
 ## References
 - Conventions: see `CLAUDE.md` at the root
 - ADRs: see `docs/architecture/`

@@ -118,6 +118,22 @@ For each file cleaned:
 - Removed 2 dead imports (line 1-2)
 ```
 
+## Racionalizações comuns
+
+| Racionalização | Realidade |
+|---|---|
+| "Esse comentário pode ser útil pra alguém" | Se o comentário repete o nome da função, não ajuda ninguém. Remova. |
+| "Melhor ter abstrações do que não ter" | Abstração prematura é complexidade gratuita. Se só tem 1 implementação, inline. |
+| "O console.log ajuda no debug futuro" | Log de debug sem nível não ajuda — polui. Use logger estruturado ou remova. |
+| "O código foi gerado, deve estar bom" | Código gerado por LLM tem padrões previsíveis de slop. Limpe sempre. |
+
+## Red Flags
+
+- Limpou código sem ler o arquivo inteiro primeiro
+- Mudou comportamento durante limpeza (cleanup deve ser behavior-preserving)
+- Não rodou testes depois da limpeza
+- Aprovou a própria limpeza (writer e reviewer devem ser passes diferentes)
+
 ## References
 - Karpathy's guidelines on clean code
 - See `CLAUDE.md` for project conventions
