@@ -7,11 +7,15 @@ This project uses date-based releases (YYYY-MM-DD), not semver.
 
 ---
 
-## [2026-04-11] — Anti-rationalization, red flags, scope discipline, error-as-data
+## [2026-04-11] — Agent discipline: anti-rationalization, boundaries, new skills
 
 Patterns incorporated from analysis of [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills).
 
 ### Added
+- **Source-driven development skill** (`.claude/skills/source-driven-development/`) — forces agents to verify framework-specific decisions against official docs, not training data. Rules: detect stack versions, fetch docs before coding, cite sources, mark UNVERIFIED when docs unavailable. Source hierarchy: official docs > source code > migration guides > examples > UNVERIFIED.
+- **Context engineering skill** (`.claude/skills/context-engineering/`) — proactive context window management. Target <2,000 lines per task, load on demand, forget aggressively. 5 techniques: task decomposition, strategic reading, checkpoints, progressive disclosure, memory offloading. Complements the reactive `context-guard` hook.
+- **"Not Doing" list in PRD writer** — new mandatory step 4 in PRD workflow: explicitly document what was chosen NOT to build and why. Added to quality checklist ("Not Doing list with at least 3 items and justifications"). Prevents scope creep by making exclusions visible.
+- **Three-tier boundaries in agents** — all 4 agents (security-auditor, compliance-auditor, quality-guardian, performance-auditor) now have `## Boundaries` with Always Do / Ask First / Never Do sections. Defines clear guardrails for autonomous vs. human-gated decisions.
 - **Anti-rationalization tables** — 5 skills now have `## Racionalizações comuns` sections: domain-specific excuse→rebuttal tables that prevent agents from skipping steps. Skills: implement-prd, debugger, persistence, code-review, slop-cleaner.
 - **Red flags sections** — 5 skills now have `## Red Flags` sections: observable behavioral patterns that indicate a skill is being violated. Serves as drift detection mechanism.
 - **Scope discipline** — pre-commit review now includes CONSIDER-level reminder to add `Não alterou:` section to commit messages listing files/modules intentionally not changed. Convention added to CLAUDE.md.

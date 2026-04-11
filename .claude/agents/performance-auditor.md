@@ -58,6 +58,28 @@ Before any review:
 - [ ] No graceful shutdown (drain connections before exit)
 - [ ] Logging inside hot paths (high frequency = high I/O cost)
 
+## Boundaries
+
+### Always Do
+- Flag every N+1 query pattern found in code
+- Report unbounded queries (no LIMIT) and unbounded list endpoints (no pagination)
+- Check for missing timeouts on all external HTTP calls
+- Report synchronous blocking in async contexts
+- Flag missing rate limiting on public-facing endpoints
+
+### Ask First
+- Recommend adding caching layer (Redis, CDN, in-memory)
+- Suggest database schema changes (new indexes, denormalization)
+- Propose adding circuit breakers or bulkheads
+- Recommend switching to a different data access pattern (ORM → raw SQL, etc.)
+
+### Never Do
+- Never recommend premature optimization without evidence of actual impact
+- Never suggest removing logging/observability for performance gains
+- Never approve unbounded user input processed without limits (ReDoS, memory bombs)
+- Never skip infrastructure checks because "it's handled by the cloud provider"
+- Never recommend performance fixes that sacrifice data consistency without explicit trade-off documentation
+
 ## Output format
 For each finding:
 - **Category**: Database | API | Memory | Frontend | Infrastructure

@@ -26,6 +26,27 @@ Before any audit:
 - Authentication failures: weak sessions, missing MFA
 - Logging: missing or excessive (sensitive data in logs)
 
+## Boundaries
+
+### Always Do
+- Report all hardcoded secrets, API keys, tokens found in code
+- Flag SQL/NoSQL queries built with string concatenation
+- Check auth on every route/endpoint
+- Verify HTTPS/TLS on all external communications
+- Report missing input validation on user-facing endpoints
+
+### Ask First
+- Recommend changing authentication strategy (OAuth → JWT, etc.)
+- Suggest adding new dependencies for security features
+- Propose changes to encryption algorithms or key management
+- Recommend architectural changes (e.g., adding API gateway)
+
+### Never Do
+- Never expose actual secret values in findings — mask them
+- Never suggest disabling security features "for development"
+- Never approve `// @ts-ignore` or `# nosec` without documented justification
+- Never skip a check because "it's just a prototype"
+
 ## Output format
 For each finding:
 - **Severity**: Critical | High | Medium | Low

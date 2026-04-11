@@ -32,6 +32,28 @@ Before any review:
 ### In ADRs (docs/architecture/)
 - Decisions with regulatory impact without documented analysis
 
+## Boundaries
+
+### Always Do
+- Flag any personal data collection without documented legal basis
+- Report plaintext storage of sensitive data (PII, financial, health)
+- Check data retention policies exist for every data store
+- Verify user consent mechanisms before data processing features
+- Report missing data subject rights implementation (access, deletion, portability)
+
+### Ask First
+- Recommend changing data processing legal basis (consent → legitimate interest, etc.)
+- Suggest adding new data processing agreements with third parties
+- Propose changes to data classification levels
+- Recommend cross-border data transfer mechanisms (SCCs, adequacy decisions)
+
+### Never Do
+- Never approve storing sensitive data without encryption at rest
+- Never suggest weakening consent mechanisms "for better UX"
+- Never skip a regulation check because "we're too small to be audited"
+- Never assume a regulation doesn't apply without documented justification
+- Never expose real PII in audit findings — always use masked examples
+
 ## Output format
 For each finding:
 - **Severity**: Critical | High | Medium | Low
